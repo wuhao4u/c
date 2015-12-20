@@ -1,0 +1,307 @@
+
+<!-- saved from url=(0071)http://www.physics.drexel.edu/courses/Comp_Phys/General/UNIX/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>The UNIX Operating System</title>
+</head>
+
+<body bgcolor="#ffffee" data-feedly-mini="yes">
+
+<center><h1>The UNIX Operating System</h1></center>
+
+The following is a (very) brief summary of the UNIX (or Linux)
+Operating System.  It describes a small subset of the commands
+available under the shells sh (or its linux version, bash) and csh (or
+tcsh, an extended version of csh). These shells offer a convenient
+syntax for executing interactive commands.  The command structure in
+bash is in many ways more powerful, and is particularly useful in
+writing scripts where efficiency is important.  <p>
+
+</p><h2> The File System </h2>
+
+In UNIX (and Linux), physical disks are divided into logical
+``partitions'' (blocks of space of specific size) with the
+<b>format</b> command.  A <i>file system</i> is then imposed on these
+partitions, allowing a directory structure to exist.  Directories
+(``folders'' in Windows or MacOS terminology) can contain files of
+arbitrary types.  <p>
+
+Some commands allowing a user to manipulate files are:
+
+</p><dl>
+
+<dt> <b> pwd </b>
+</dt><dd> displays the name of the current directory (``.'')<p>
+
+</p></dd><dt> <b> ls </b>
+</dt><dd> lists the files in the current directory<p>
+
+</p></dd><dt> <b> ls dir </b>
+</dt><dd> lists the files in the directory ``dir''<p>
+
+</p></dd><dt> <b> ls </b>
+</dt><dd> displays the contents of the current directory; ``ls -lF'' is a useful
+   extension providing additional information about the files<p>
+
+</p></dd><dt> <b> cp file1 file2 </b>
+</dt><dd> copies file1 to file2<p>
+
+</p></dd><dt> <b> cd /dir1/dir2 </b>
+</dt><dd> go to specified directory; <kbd>cd ..</kbd> means go to the directory
+   above the current directory; <kbd>cd ../foo</kbd> means go up one level,
+   then down into directory foo.  The current directory is always
+   denoted by ``.''<p>
+
+</p></dd><dt> <b> mv file1 file2</b>
+</dt><dd> rename file1 as file2, within the same directory (changing
+   the name of the file), or move file1 into some other directory<p>
+
+</p></dd><dt> <b> cat file </b>
+</dt><dd> display file onto standard output (the screen, usually)<p>
+
+</p></dd><dt> <b> more file </b>
+</dt><dd> display file onto standard output (screen), one screenful at a
+     time.  For obscure UNIX reasons, the command "less" does much the
+     same thing...<p>
+
+</p></dd><dt> <b> &gt; </b>
+</dt><dt> <b> &gt;&gt; </b>
+</dt><dd> redirect output to a file;
+	e.g. <kbd> cat file1 &gt; file2 </kbd> copies file file1 into file2,
+	and  <kbd> cat file1 &gt;&gt; file2 </kbd> appends file1 onto file2.<p>
+
+</p></dd><dt> <b> | </b>
+</dt><dd> ``pipe'' standard output to standard input
+	e.g. <kbd> cmd1 | cmd2 </kbd> sends the output of command
+	cmd1 into the input of cmd2<p>
+
+</p></dd><dt> <b> touch file</b>
+</dt><dd> updates the ``date and time stamp'' of a file, making it
+   believe that it has just been modified<p>
+
+</p></dd><dt> <b> rm file</b>
+</dt><dd> delete a file<p>
+
+</p></dd></dl>
+<p>
+
+File name completion is supported under csh and tcsh (turn it on by
+issuing the command ``set filec.'' In csh, use the ESCAPE key; in
+tcsh, use the TAB key. </p><p>
+
+UNIX also supports ``wildcards.''  A ``?''  will be replaced by any
+matching single character, while a ``*'' will be replaced by any
+number of matching characters.  For example, <kbd> ls abc*.c </kbd>
+will list all files whose name starts with ``abc'' and ends in ``.c''.
+
+</p><h2> System Access and Security</h2>
+
+UNIX provides a multi-user computing environment.  This means that it
+shares its resources among many users, as well as the various tasks
+that each user might be performing.  It also implies that UNIX must
+provide a security safegard against users peeking into each others'
+``home directories.''
+<p>
+
+To gain access to a UNIX system, a user must first identify his/her
+account in response to the login prompt,
+</p><p>
+</p><pre><kbd>	Login:   </kbd> <i> username </i>
+<kbd>	Password:</kbd> <i> password </i>
+</pre>
+
+then give a unique password. A user can change his/her password by
+issuing the command <kbd>passwd</kbd>, followed by the old and new
+passwords.  <p>
+
+The user can exit the system with the command <kbd> logout </kbd>.
+
+On login, UNIX starts up a new shell interpreter (e.g. the C-shell
+interpreter csh, or bash), and sets up the computing environment for
+the user by scanning the ``hidden'' (i.e. not normally listed by ls)
+set-up files, <tt>.login</tt> and <tt>.cshrc</tt> (<tt>.orifile</tt>
+and <tt>.bashrc</tt> in bash). The <tt>.cshrc</tt> file is also
+scanned each time a new ``task'' (e.g. a new window) is launched.
+These hidden files are how a user can customize his/her computing
+environment at will, typically with commands like
+</p><pre>	alias name definition
+</pre>
+in csh, or
+<pre>        alias name=definition
+</pre>
+in bash, which defines ``name'' (usually something short) to mean
+``definition'' (often long and/or complicated).  <p>
+
+Each file is marked for ownership by a user and as belonging to a
+group of users.  Each file is also marked for ``reading'', ``writing''
+and ``execute'' permissions by its owner, members of its group and by
+``others'' The directory command ``ls -l'' lists these permissions as
+``r'', ``w'' and ``x'' if they are allowed.  For instance, the
+following dialog </p><p>
+
+</p><pre>	&gt; ls -l
+	total 6
+	-rw-rw-r--  1 steve     4322 Jan 10 12:30 file1
+	drwxrwxr-x  2 steve      512 Jan 10 12:29 file2
+	&gt; 
+</pre>
+
+shows that file1 has can be read and written by the owner and all
+group members, and read by all, while file2 is unprotected, except
+that it cannot be written by ``others''. Furthermore, file2 is a
+directory (name of a sub-directory within the current one -- indicated
+by a ``d'' in the first column).   For a full description
+of <kbd>ls</kbd> and its options, type '<kbd>man ls</kbd>'.<p>
+
+The protections of a file or group of files can be modified using
+the <kbd> chmod </kbd> command.  For example, to make all files whose
+names begin with <tt>abc</tt> executable by your group and unreadable
+by others, type
+
+</p><pre>	&gt; ls -l abc*
+        -rw-r--r--  1 steve  staff   123 Mar 31 10:38 abc1
+        -rw-r--r--  1 steve  staff  2331 Mar 31 10:38 abc2
+        -rw-r--r--  1 steve  staff     2 Mar 31 10:38 abc34
+	&gt; chmod g+x,o-r abc*
+	&gt; ls -l abc*
+        -rw-r-x---  1 steve  staff   123 Mar 31 10:38 abc1
+        -rw-r-x---  1 steve  staff  2331 Mar 31 10:38 abc2
+        -rw-r-x---  1 steve  staff     2 Mar 31 10:38 abc34
+</pre>
+
+To change the default file permissions, i.e. the permissions applied
+to every new file you create, use the <tt>umask</tt> command:
+
+<pre>	&gt; umask 022
+        &gt; touch xyz
+        &gt; ls -l xyz
+        -rw-r--r--  1 steve  staff  0 Mar 31 10:57 xyz
+	&gt; umask 026
+        &gt; touch pqr
+        &gt; ls -l pqr
+        -rw-r-----  1 steve  staff  0 Mar 31 10:58 pqr
+</pre>
+
+The algorithm is a little obscure: take the number following
+the <tt>umask</tt> command, subtract it from 666, and the result is
+the user/group/other permissions, in octal!  As a practical matter,
+022 gives everyone read permission, 026 denies read access to others
+(outside your group), and 066 means that noone else can read or
+execute your files.  The <tt>umask</tt> command is normally placed in
+your <tt>.login</tt> or <tt>.profile</tt> file, so that it is executed
+every time to log in to the system.
+
+<p>The ownership of a file can be modified by the command <kbd>
+chown </kbd>; this is a restricted command, however -- it can be
+executed only by the system ``super-user.''  </p><p>
+
+</p><p>There are many other commands that facilitate the users'
+interaction with the computer in small ways; for instance:
+</p><dl>
+<dt> <b> date</b>
+</dt><dd> gives you the date
+</dd><dt> <b> time </b>
+</dt><dd> gives you the time
+</dd><dt> <b> hostname </b>
+</dt><dd> reminds you of the system name
+</dd><dt> <b> finger </b>
+</dt><dd> gives a list of users and what they are doing
+</dd><dt> <b> ps </b>
+</dt><dd> display the tasks running on the computer; try <kbd> ps -aux </kbd>
+</dd><dt> <b> history </b>
+</dt><dd> lists your most recent commands
+</dd><dt> <b> !! </b>
+</dt><dd> recalls the last command
+</dd><dt> <b> !str </b>
+</dt><dd> recalls the last command starting with the string str
+</dd><dt> <b> !n </b>
+</dt><dd> recalls the nth command
+</dd></dl>
+
+<p> Help on any UNIX command can be obtained via the <kbd> man </kbd>
+command.  The command ``man cmd'' prints to standard output the
+content of the manual pages concerning the UNIX command ``cmd''. You
+can also search by context with <kbd> man -k cmd </kbd>.  </p><p>
+
+</p><h2> Executing Commands: Running Programs </h2>
+
+A file can be of the special ``executable'' type (e.g. resulting from
+a compilation of C code followed by linking to the appropriate
+libraries), meaning that it contains instructions for the computer to
+execute.  For instance, each UNIX command is itself an ``executable''
+residing on the disk in a directory accesible by all. These files are
+executed by specifying their name, followed by any necessary
+argument. For instance, <p>
+
+</p><pre>	ls -lFg file
+</pre>
+<p>
+
+will execute the ``ls'' command, with arguments ``-lFfg'' (a switch)
+and ``file'', resulting is a very complete directory listing for the
+file ``file''. The same goes for any executable file that you might
+create.  </p><p>
+
+</p><h2> Automating Tasks: Scripts </h2>
+
+Any set of UNIX commands can be put into a ``script'' file to be
+executed all at once as a single command. The language is very
+complete, including control structures and looping. As an example,
+consider the following script: <p>
+
+</p><pre>#!/bin/csh
+#
+#          example of a C-shell script
+#          --------------------------- 
+#
+#		store the wordlist resulting from
+#		the ls command in variable files
+#		
+set files = `ls`
+#
+#		foreach is a loop; files takes on the
+#		value of each entry in files
+#
+#		$variable_name is the content of
+#		that variable
+#
+foreach file ( $files )
+      echo 'File name:' $file
+end
+</pre>
+<p>
+
+The script explicitly calls for the C-shell interpreter; the ``set''
+command transfers the result of the ls command into the variable
+``files'' as a wordlist. Then the ``foreach ...  end'' loops over the
+wordlist, assigning each member to the variable ``file''. The command
+``echo'' writes a message to standard output. The syntax ``$variable''
+means the ``content'' of the variable; $var[i] means the content of
+the ith position in the variable.  </p><p>
+
+At the script level, the differences between bash and csh become more
+evident.  A bash version of the above script might look like:
+
+</p><pre>#!/bin/bash
+#
+#          example of a bash script
+#          ------------------------
+#
+#		store the wordlist resulting from
+#		the ls command in variable files
+#		
+files=`ls`
+#
+#		for is a loop; files takes on the
+#		value of each entry in files
+#
+#		$variable_name is the content of
+#		that variable
+#
+for file in $files; do
+      echo 'File name:' $file
+done
+</pre>
+<p>
+
+
+</p></body><div></div><div></div></html>

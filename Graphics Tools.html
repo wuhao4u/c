@@ -1,0 +1,718 @@
+
+<!-- saved from url=(0075)http://www.physics.drexel.edu/courses/Comp_Phys/General/Graphics/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Graphics Tools</title>
+</head>
+
+<body bgcolor="#ffffee" data-feedly-mini="yes">
+
+&nbsp;
+<p></p><center>
+<center><hr width="60%"></center>
+<h1> Graphics Tools </h1>
+<center><hr width="60%"></center>
+</center>
+<p><br>
+
+</p><h2> Dealing with Data</h2>
+
+This section contains a brief introduction to some of the graphics
+tools available on the Drexel Physics computer lab.<p>
+
+Programs--scientific ones, at least--tend to generate lots of data.
+You have already seen examples of this in the C-language primer
+document, and you will see many more.  Once, you had little choice as
+to what you could do with those data.  You could only print it out and
+look at it in the form of columns of figures on the screen.  Pretty
+dull...!</p><p>
+
+Often, the best way to represent a large dataset is in
+<em>graphical</em> form.  At its simplest, this may just mean drawing
+simple line graphs.  In more sophisticated contexts, you may end up
+making an elaborate 3-D movie, complete with audio track, to
+illustrate the Physics and explain your findings to others.  Such
+sophisticated visualization is more an art than a science, and usually
+calls for specialized hardware and software (although you can actually
+get quite far without leaving our lab).  Here, we will confine
+ourselves to a discussion of a few basic programs and packages to help
+you make simple plots and images from your data.</p><p>
+
+The following is a list of some useful graphics tools available on
+our system:
+
+</p><p></p><center><table>
+
+<tbody><tr><td><a href="http://www.physics.drexel.edu/courses/Comp_Phys/General/Graphics/index.html#simple_plot"><tt>simple_plot</tt></a>:&nbsp;&nbsp;
+    </td><td>a minimal collection of graphics routines,
+        for use within a user's C program
+</td></tr>
+  
+<tr><td><a href="http://www.physics.drexel.edu/courses/Comp_Phys/General/Graphics/index.html#plot_data"><tt>plot_data</tt></a>:
+    </td><td>a simple pipelined line-drawing program
+</td></tr>
+
+<tr><td><a href="http://www.physics.drexel.edu/courses/Comp_Phys/General/Graphics/index.html#gpl"><tt>gpl</tt></a>:
+    </td><td>an even simpler pipelined line-drawing program, based on
+        gnuplot (see below)
+</td></tr>
+
+<tr><td><a href="http://www.physics.drexel.edu/courses/Comp_Phys/General/Graphics/index.html#mcdraw"><tt>mcdraw</tt></a>:
+    </td><td>not so easy to use, but more powerful,
+        mostly 2-D line-drawing package.
+</td></tr>
+
+<tr><td><a href="http://www.physics.drexel.edu/courses/Comp_Phys/General/Graphics/gnuplot.html"><tt>gnuplot</tt></a>:
+    </td><td>a very powerful 2-D and 3-D plotting package.
+</td></tr>
+
+<!--
+<tr><td><tt>khoros</tt>:
+    <td>a collection of 3-D plotting programs
+</tr>
+-->
+
+<tr><td><a href="http://www.physics.drexel.edu/courses/Comp_Phys/General/Graphics/index.html#image"><tt>make_image</tt></a>:
+    </td><td>simple program to convert data into images
+</td></tr>
+
+<tr><td><a href="http://www.physics.drexel.edu/courses/Comp_Phys/General/Graphics/index.html#images"><tt>make_images</tt></a>:
+    </td><td>simple program to convert a stream of data into multiple images
+</td></tr>
+
+<tr><td><tt>convert</tt>:
+    </td><td>useful routines to convert one image format
+        into another
+</td></tr>
+
+<tr><td><tt>gifsicle</tt>:
+    </td><td>turn a collection of GIF images into an animation!
+</td></tr>
+
+<tr><td><tt>png2mng</tt>:
+    </td><td>same, for PNG images
+</td></tr>
+
+<!--
+<tr><td><tt>mpeg_encode</tt>:&nbsp;&nbsp;
+    <td>a way to make movies!
+</tr>
+-->
+
+</tbody></table></center><p>
+
+Many others exist, but these will be sufficient for our purposes.
+
+<!-- ------------------------------------------------------------ -->
+
+</p><h2><a name="simple">Making Simple Plots</a></h2><a name="simple">
+
+<h3>Drawing a Graph</h3>
+
+Let's begin by describing the steps we must take to plot a simple
+graph (e.g. to make a graph of the ``sine'' tabular data produced by
+one of the early examples in the C primer).  For the sake of
+readibility, and for the convenience of the plotting routines, let's
+imagine that the data are written out (to a file or just to
+<tt>stdout</tt>) in the form of columns: <tt>x y1(x) y2(x)
+...</tt>.  As a reminder, and as a way of generating data for
+plotting purposes, </a><a href="http://www.physics.drexel.edu/courses/Comp_Phys/General/Graphics/trig.c">here</a> is a short program that
+does what we need:
+
+<pre>#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+
+#define N_POINTS 1000
+#define XMIN 	 0
+#define XMAX 	 (4 * M_PI)	/* this is just 4 PI; M_PI defined in math.h */
+
+main()
+{
+    int i;
+    double x;
+
+    for (i = 0; i &lt; N_POINTS; i++) {
+	x = XMIN + i * (XMAX - XMIN) / (N_POINTS - 1);
+	printf("%f %f %f\n", x, sin(x), cos(x));
+    }
+}
+</pre>
+
+This will produce 3 columns of data, with 1000 rows in each, listing
+the values of x, sin x and cos x, for values of x linearly spaced
+between 0 and 4 PI.<p>
+
+In the simplest possible case, to draw a graph of, say sin x versus x
+(column 2 versus column 1), we must do the following:
+
+</p><ul>
+	<li>read in the data to be plotted from <tt>stdin</tt> or a file
+	</li><li>determine the limits of the data
+	</li><li>open a graphics device (e.g. an X-window)
+	</li><li>draw a set of axes, tick-marks, numbers and labels
+	</li><li>determine scaling information to draw the data on the
+	    output device
+	</li><li>plot the data as points or lines, as desired
+</li></ul>
+
+Naturally, X provides all the necessary primitive (low-level)
+machinery to do all this, and you can do all your own graphics relying
+purely on function calls to the X libraries if you so desire.
+However, this is usually quite cumbersome and unpleasant to program.
+Instead, we provide several simpler, if more limited, means of
+handling graphical data.<p>
+
+</p><h3>The <a name="simple_plot"><tt>simple_plot</tt> library</a></h3><a name="simple_plot">
+
+The <tt>simple_plot</tt> library functions allow you to write a
+program using high-level calls to a small set of interface programs,
+allowing you to use the X display without first becoming an
+``X-pert''.  The interface is kept deliberately simple, making it very
+easy to use, but still capable of producing useful, if basic, graphs
+and animations.<p>
+
+The following functions are declared in the header file
+<tt>simple_plot.h</tt>.  To use these functions, include
+<tt>simple_plot.h</tt> in your C program and compile using the system
+``<tt>Cgfx</tt>'' command, which will find the proper header files and
+use the correct graphics libraries.
+
+</p><p></p><center><table>
+
+<tbody><tr><td><pre>void draw_box(float xmin, float xmax, char *xlabel,
+	      float ymin, float ymax, char *ylabel);&nbsp;</pre>
+    </td><td>initialize graphics and draw a box with axes running from
+	      <tt>xmin</tt> to <tt>xmax</tt> in <tt>x</tt> and
+	      <tt>ymin</tt> to <tt>ymax</tt> in <tt>y</tt>, with
+	      labels as specified (label = NULL ==&gt; no label drawn)
+</td></tr>
+<tr><td><pre>void add_label(char *label);</pre>
+    </td><td>add an overall label centered above the box
+</td></tr>
+<tr><td><pre>void set_color(char *color);</pre>
+    </td><td>specify the (standard X) color used for all subsequent
+	      graphics operations
+</td></tr>
+<tr><td><pre>void plot(float *x, float *y, int n);</pre>
+    </td><td>plot the array <tt>y</tt> as a function of the array
+	      <tt>x</tt>, plotting only those points lying within the
+	      box
+</td></tr>
+<tr><td><pre>void move_to(float x, float y);</pre>
+    </td><td>move to (x, y)
+</td></tr>
+<tr><td><pre>void draw_to(float x, float y);</pre>
+    </td><td>draw to (x, y), showing only the portion of the line lying
+	      within the box
+</td></tr>
+<tr><td><pre>void point(float x, float y, float size);</pre>
+    </td><td>draw a ``point'' at (x, y), with size specified in x-axis
+	      units
+</td></tr>
+<tr><td><pre>void get_mouse(float *x, float *y);</pre>
+    </td><td>return the current position of the mouse (wait for right
+	      mouse button to be pressed)
+</td></tr>
+<tr><td><pre>int check_mouse();</pre>
+    </td><td>return 0 if no mouse button has been pressed, the number of
+	      the mouse button (1=L, 2=M, 3=R) otherwise (no waiting)
+</td></tr>
+<tr><td><pre>void wait_for_mouse();</pre>
+    </td><td>wait for a mouse button to be pressed, then return
+</td></tr>
+<tr><td><pre>void pause(int time);</pre>
+    </td><td>pause for 'time' microseconds
+</td></tr>
+<tr><td><pre>void clear_graphics();</pre>
+    </td><td>erase the entire display
+</td></tr>
+<tr><td><pre>void exit_graphics();</pre>
+    </td><td>quit the graphics package
+</td></tr>
+
+</tbody></table></center><p>
+
+Thus, to perform the actions listed above for the sine function, we
+can use the following program:
+
+</p><pre>#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+
+#include "simple_plot.h"
+
+#define N_POINTS 1000
+#define XMIN 	 0
+#define XMAX 	 (4 * M_PI)	/* this is just 4 PI; M_PI defined in math.h */
+
+main()
+{
+    int i;
+    double x;
+
+    set_color("black");		/* (this is the default) */
+
+    draw_box(XMIN, XMAX, "x", -1, 1, "sin(x)");
+    add_label("plot of sin(x) versus x");
+
+    move_to(XMIN, sin(XMIN));
+    set_color("red");
+    for (i = 0; i &lt; N_POINTS; i++) {
+	x = XMIN + i * (XMAX - XMIN) / (N_POINTS - 1);
+	draw_to(x, sin(x));
+    }
+
+    exit_graphics();
+}
+</pre>
+
+The result should look something like:<p>
+
+</p><center><img src="./Graphics Tools_files/simple_plot.gif"></center>
+
+</a><p><a name="simple_plot">An alternative, and in many ways simpler, approach is to use the
+``black box'' plotting program <tt>plot_data</tt>, described below,
+which contains within it all the knowledge needed to make fairly
+complete plots on an X-window display.  The program itself makes calls
+to the <tt>lux</tt> interface library written by ex-Drexel graduate
+student Biao Lu.  If you are interested in seeing what is involved in
+dealing with X at this level, look in the <tt>plot_data</tt> and
+<tt>lux</tt> source code (distributed as part of the ``</a><a href="http://www.sns.ias.edu/~starlab">Starlab</a>'' software package).
+In fact, the <tt>simple_plot</tt> library functions are identical to
+those used by <tt>plot_data</tt>.</p><p>
+
+</p><h3><a name="plot_data">The program <tt>plot_data</tt></a></h3><a name="plot_data">
+
+The watchwords in programming are flexibility and modularity.
+Functions should perform specific, well-defined, simple tasks, without
+side effects.  Complexity in a program comes from combinations of
+simple tools.  The UNIX embodiment of this philosophy is the notion of
+writing programs that operate as <em>filters</em>, acting on a stream
+of data that is read from <tt>stdin</tt>, modified in some way, then
+(usually) written out to <tt>stdout</tt>. The idea of only using
+simple programs joined by pipes may sound terribly limiting, but in
+fact it is not.  Remarkably sophisticated packages can be constructed
+in this way.  Separating functionality in this way has the added
+advantage that we can concentrate on programming the physics without
+having to be bothered with the minutiae of the graphics.<p>
+
+The <tt>plot_data</tt> program accepts as input columns of data in
+character, integer, or floating-point format.  It selects two columns,
+then performs all the operations listed above to produce a graph on
+the X-terminal.  If the above program (producing x, sin x and cos x)
+has been compiled and called <tt>trig</tt>, then we can plot a graph
+of sin x simply by typing
+
+</p><pre>	trig | plot_data
+</pre>
+
+You should see something like:<p>
+
+</p><center><img src="./Graphics Tools_files/plot_data_1.gif"></center>
+
+<p>By default, <tt>plot_data</tt> plots column 1 as the x (horizontal)
+axis, column 2 as the y (vertical) axis.  Its defaults are selected so
+that it does something ``reasonable'' with the minimum of user
+input.</p><p>
+
+Suppose we want a graph of cos x instead.  To specify the columns to
+plot, use the command-line switch <tt>-c xcol ycol</tt>.  This will
+result in <tt>xcol</tt> being plotted as <tt>x</tt>,
+<tt>ycol</tt> as <tt>y</tt> (so the default is <tt>xcol = 1, ycol
+= 2</tt>).  Thus, we would say:</p><p>
+
+</p><pre>	trig | plot_data  -c 1 3
+</pre>
+
+The graph will now look like:<p>
+
+</p><center><img src="./Graphics Tools_files/plot_data_2.gif"></center>
+
+<p>By default, the limits on the x and y axes are taken from the data.
+To override this and set your own, use the <tt>-l xmin xmax ymin
+ymax</tt> switch, which forces the range on the x-axis to be
+<tt>[xmin, xmax]</tt> and that on the y-axis to be <tt>[ymin,
+ymax]</tt>.</p><p>
+
+There are several more options to allow you to control the appearance
+of your graph.  Here is the complete list.
+
+</p><pre>        -c xcol ycol1 ycol2 ycol3...
+                        plot data in xcol horizontally, ycol1, ycol2,
+			ycol3,... vertically [1 2]
+        -c[c][xy]       crop [x or y] data to plot limits
+        -C color1 color2 color3...
+                        specify line/point colors for the columns set
+			by "-c" [all black]
+        -e              echo current settings
+        -h header       specify overall label for plot [none]
+        -i              ignore inline commands [don't ignore]
+        -l xmin xmax ymin ymax  specify limits for plot [get from data]
+        -ll             force plot lines only [plot lines]
+        -L scale        specify limits to be +/- scale for both axes
+        -N nmax         specify maximum number of points to store [50000]
+        -o              echo stdin to stdout [do not echo]
+        -O xo yo        specify top left corner of plotting box [150, 50]
+        -p              toggle plot points only [plot lines]
+        -pp             force plot points only [plot lines]
+        -P size         specify point size, in x-axis units [0 ==&gt; pixel]
+        -q              suppress most output [don't suppress]
+        -Q              quit
+        -s xs ys        specify box size [500, 500]
+        -S skip         skip leading lines [0]
+        -t ntrail       specify number of trailing points [infinite]
+        -w[w][xy]       wrap [x or y] data to plot limits
+        -W              wait for keyboard input [inline only]
+        -x xlabel       specify label for x-axis ["column 'xcol'"]
+        -X              clear the display and redraw axes [inline only]
+        -y ylabel       specify label for y-axis ["column 'ycol1...'"]
+        -z zcol         specify column for color data [none]
+</pre>
+
+The expressions in square brackets are the defaults.  To get this
+list, you can type <tt>plot_data --help</tt>.<p>
+
+Most of the above options are fairly self-explanatory.  One useful
+feature of the program is that it can read in several columns of data,
+and plot the first on the horizontal axis, all the others vertically.
+The <tt>-C</tt> option allows each graph to be plotted in a different
+color (specified as standard X color names -- red, blue, green, etc.),
+if desired.</p><p>
+
+Alternatively, <tt>plot_data</tt> can read in <em>three</em> columns
+of data (x, y, and z, say) and plot y against x, choosing the color of
+each point according to the value of the data in z.  The mapping
+between z-value and color is presently fairly rudimentary, but
+improvements are in the works.</p><p>
+
+The limits for the graphs may be specified on the command line, in
+which case <tt>plot_data</tt> draws the axes first and plots points as
+they become available, allowing you to see the plot evolve, or to make
+animations (<tt>-t</tt> option).  Otherwise, <tt>plot_data</tt> must
+determine the limits from the input data, so nothing is plotted until
+the entire data stream is read.</p><p>
+
+Some examples (assume that the program <tt>data</tt> produces the
+stream of data to plot):
+
+</p><ul>
+	<li>To plot column 3 as x, columns 2 and 7 as y, coloring the
+	    plots red and green, labeling the x and y axes as "X" and
+	    "Y", and setting the limits on the axes to be [-1, 1] and
+	    [0, 1]: 
+<pre>	data  |  plot_data  -c 3 2 7  -C red green  -x X -y Y  -l -1 1 0 1
+</pre>
+	</li><li>To plot column 1 as x, column 2 as y (the default),
+	    plotting points only and drawing them in red:<p>
+</p><pre>	data  |  plot_data  -p  -C red
+</pre>
+	</li><li>To plot column 4 as x, column 5 as y, making the plot
+	    almost fill the entire screen and coloring the data
+	    according to the contents of column 7:
+<pre>	data  |  plot_data  -c 4 5  -s 800 800  -z 7
+</pre>
+
+</li></ul>
+
+<p>Finally, the current version of <tt>plot_data</tt> accepts most of
+the above command-line options as <em>embedded commands</em> in the
+input data stream itself, allowing the user to exercise run-time
+control over the display.  For example, if the command line indicates
+that a single column is to be plotted in the vertical direction, and
+that the data are to be plotted as lines, then if the data stream
+contains
+</p><pre>        .
+        .
+        .
+        x  y  z
+        x  y  z
+        x  y  z
+	-C red -p
+        x  y  z
+        x  y  z
+        .
+        .
+        .
+</pre>
+the effect of the inline command will be to switch the plot color to
+red and to enter point mode.  Subsequent commands might clear the
+screen, redefine the axes, change the size of plotted points or the
+number of points plotted in ``trail'' mode, and so on.  All commands
+except <tt>-i</tt>, <tt>-N</tt>, <tt>-o</tt>, and <tt>-s</tt>
+are inlinable.  In addition, some commands only operate in inline
+mode: the pause (<tt>-W</tt>) option allows the program to wait for
+a keyclick from the user before continuing; and the <tt>-X</tt>
+command clears the display and redraws the axes.
+
+<p>In order to to use inline commands, it is necessary that a window
+be opened for plotting at the start of input, not at the
+end, and this requires that some scaling information be provided on
+the command line.  (If no such information is avaliable, then
+<tt>plot_data</tt> must obtain limits from the data, so the entire
+graph is drawn after the data are read and inline commands are
+ignored.)  However, since the limits themselves can be set by inline
+commands, all that is really necessary is for <tt>plot_data</tt> to be
+forced to open a window, so a simple command like
+</p><pre>	plot_data -L
+</pre>
+will suffice (the default for <tt>-L</tt> is 1).  True limits, labels,
+graphs, colors, etc. can then be specified by the program producing
+the data.  For example, the plot produced by the first example above
+could also be created by having the program <tt>data</tt> print out
+the line
+<pre>	-c 3 2 7  -C red green  -x X -y Y  -l -1 1 0 1
+</pre>
+before printing its output, and typing
+<pre>	data | plot_data -L
+</pre>
+on the command line.  This simple technique allows a user to write
+remarkably complex graphics programs using nothing more sophisticated
+than <tt>printf</tt> statements!
+
+<h3>Getting Hardcopy</h3>
+
+Note that <tt>plot_data</tt>, like the <tt>simple_plot</tt>
+functions, only creates graphs in an X-window environment.  It does
+<em>not</em> know how to send plots to a printer.  A workaround for
+this shortcoming, which results only in rather low-resolution printout
+(but that is at least better than no printout at all!), is to use the
+<tt>xwd</tt> utility to send a screen dump of the <tt>plot_data</tt>
+window to the printer.  A typical sequence of commands would be
+<pre>	xwd  |  xpr  |  lpr
+</pre>
+or possibly
+<pre>	convert  x:  ps:-  |  lpr
+</pre>
+Your cursor will turn into a cross and you will click in the
+(<tt>plot_data</tt>) window you want to plot; <tt>xwd</tt> then
+creates an X-window dump (bitmap) of the window, <tt>xpr</tt> converts
+it to PostScript, and <tt>lpr</tt> prints it.  In the second form, the
+<tt>convert</tt> program (available on many systems) converts an X
+window directly into PostScript.  In either case, since the printout
+is a bitmap scaled to the size of the printed page, the best
+resolution  will be obtained by making the <tt>plot_data</tt> window
+as large as possible before printing.
+
+<!-- ------------------------------------------------------------ -->
+
+</a><h2><a name="plot_data"></a><a name="mcdraw">More Complex Plots: <tt>mcdraw</tt></a></h2><a name="mcdraw">
+
+<tt>plot_data</tt> is very useful and easy to use, but it has many
+limitations. For example, it cannot rescale data, do logarithmic
+plots, operate outside of an X-window environment, and so on.  A much
+more powerful plotting program is <tt>mcdraw</tt>, which operates on
+the same data structures as <tt>plot_data</tt> and can perform all
+the same operations (and many more), but takes its data only from a
+file rather than from <tt>stdin</tt>, so it cannot be used as part
+of a pipeline.  However, for many purposes, its other advantages
+outweigh this drawback.<p>
+
+Unlike <tt>plot_data</tt>, <tt>mcdraw</tt> prompts the user for
+all input data -- filenames, columns to plot, output device (which
+doesn't have to be an X-display), and so on -- then draws the graph
+and waits for more input.  Its original purpose was to produce
+publication-quality plots in a simple fashion.  As a result, it has
+better fonts and heuristics for deciding what ``looks right'' than
+exist in <tt>plot_data</tt>.  However, it has expanded in scope over
+the years, and can now do quite sophisticated operations, such as data
+reduction, array arithmetic, curve fitting, among others.</p><p>
+
+A typical <tt>mcdraw</tt> session, to produce a plot similar to the
+first example shown above, might look like:
+
+</p><pre>	mcdraw:	file DATA	# open a data file called DATA
+	mcdraw:	c 3 2		# get x from column 3, y from column 2
+	mcdraw:	lim -1 1 0 1	# set limits on x and y
+	mcdraw:	de x		# initialize graphics in X-windows
+	mcdraw:	xl X		# specify the x-label as "X"
+	mcdraw:	yl Y		# specify the y-label as "Y"
+	mcdraw:	box		# draw a box, with labelled axes, etc.
+	mcdraw:	plot		# plot y(x)
+	mcdraw:	la LABEL	# put an overall label ("LABEL") on the figure.
+	mcdraw:	quit		# exit from MCDRAW.
+</pre>
+
+The ``#'' means that the rest of the line is a comment.  Commands may
+be ruthlessly abbreviated and combined on a single line, separated by
+semicolons, so the above command sequence could be equally well
+written as:
+
+<pre>	mcdraw:	f DATA; c 3 2; l -1 1 0 1; de x; xl X; yl Y; b; p; q
+</pre>
+
+For more information on <tt>mcdraw</tt> and a complete description
+of the present command set, see the <tt>mcdraw</tt> </a><a href="http://www.physics.drexel.edu/courses/Comp_Phys/General/Graphics/mcdraw.text">primer</a>.
+
+<!-- ------------------------------------------------------------ -->
+
+<h2>Higher-dimensional Data</h2>
+
+<h3> Contours and Surfaces</h3>
+
+Line plots such as those produced by <tt>plot_data</tt> and
+<tt>mcdraw</tt> are fine when the dataset consists of a single
+independent variable.  However, we very often want to plot datasets in
+which the value of some function depends on two (or more) independent
+variables.  Visualizing problems with three or more independent
+variables is hard, but for two-dimensional problems -- looking at the
+data f(x, y), say -- we have a variety of approaches open to us.<p>
+
+One possibility is just to make <em>contour plots</em> of the ``level
+lines'' of the dependent function f.  <tt>mcdraw</tt> has a ``2d''
+mode which will allow you to do this interactively.  A second
+possibility is to make three-dimensional perspective plots of the
+surface in (x, y, z space) defined by z = f(x, y).  <tt>mcdraw</tt>
+can do this too, in a fairly primitive manner.  A much more
+sophisticated 3-D plotting package is <a href="http://www.khoros.unm.edu/khoros"><tt>khoros</tt></a>, a
+public-domain X utility.</p><p>
+
+A very commonly used technique for displaying two-dimensional data is
+to make an <em>image</em>. This has the considerable advantage of
+enlisting the assistance of the many image-display and
+image-processing programs that exist in the public domain. In
+addition, images can be easily combined to make <em>movies</em> using
+the <tt>mpeg_encode</tt> program.</p><p>
+
+</p><h3><a name="image">Images</a></h3><a name="image">
+
+The idea of representing data by an image is very simple.  The data
+are calculated on a rectangular grid in x and y, of dimension
+<tt>m</tt> by <tt>n</tt>, say.  Each pixel in the final image
+represents a point in that grid, and the color assigned to the pixel
+represents the value of f at that point.  The mapping between the
+value of f and the color assigned is entirely up to the programmer.
+Typically it is chosen to enhance or emphasize certain features of
+interest in the data.<p>
+
+On our systems, the color resolution of our screens allows us to
+display up to 256 colors simultaneously.  The number is chosen because
+integers in the range 0 to 255 can be represented using a single byte
+of data--an <tt>unsigned char</tt> in C.  Of course, there are many
+ways to choose these colors.  The mapping between the integers 0 to
+255 and the final color that appears on the display is called a
+<em>color map</em>.  The standard color map we use looks like this:</p><p>
+
+</p><center><img src="./Graphics Tools_files/colormap.gif"></center>
+
+<p> There is no particular reason for this choice--it is simply
+convenient.  Small numbers correspond to blue, large numbers to red,
+and intermediate numbers to intermediate colors in the ``spectrum''.
+The programs <tt>mcdraw</tt> and <tt>make_image</tt> (described in
+a moment) allow you to change the color map to one of your own, if you
+so desire.</p><p>
+
+To X, an image is a collection of bytes, one per pixel, along with a
+color map telling the display how to ``paint'' the screen.  There are
+many different image formats in use--gif, jpeg, miff, xpn, to name but
+a few.  Fortunately, we don't have to know how to construct them all.
+The program <tt>convert</tt> allows us to turn one into another.</p><p>
+
+To assist in turning your data into an image, we have provinded a
+simple program called <tt>make_image</tt>.  This program takes a
+stream of data (fdrom <tt>stdin</tt>) representing your image (scanned
+left to right, top to bottom), adds a <em>header</em> describing the
+color map (the standard one, by default), and writes the image to
+<tt>stdout</tt>.  The data may be float (the default),
+<tt>int</tt>, or <tt>char</tt>, and are <em>assumed</em> already to be
+scaled to lie in the range 0 to 255.  Thus, to make a simple image,
+assuming that <tt>data</tt> produces the correct input, just type:
+
+</p><pre>	data  |  make_image  -s XSIZE YSIZE  &gt; image
+</pre>
+
+You must specify XSIZE and YSIZE to tell the <tt>make_image</tt> how
+to divide the data string up into rows. The file <tt>image</tt>
+produced in this way may be viewed with <tt>xv</tt> or
+<tt>display</tt>.<p>
+
+The file created my <tt>make_image</tt> is in so-called ``Sun
+rasterfile'' format.  This format has no particular advantage, except
+that it is simple and easy to code.  To make, say, a GIF file, use
+<tt>convert</tt>: 
+
+</p><pre>	convert  image  image.gif
+</pre>
+
+You can also do the conversion in a pipe without creating an
+intermediate Sun rasterfile:
+
+<pre>	data  |  make_image  -s XSIZE YSIZE  |  convert - image.gif
+</pre>
+
+The full list of <tt>make_image</tt> options is:
+
+<pre>	-c	  incoming data are in char form
+	-i	  incoming data are in int form
+	-f	  incoming data are in float form [default]
+	-m file	  read the colormap from the specified file
+	-p	  pad the image to even dimensions (Sun rasterfile limitation)
+	-s m n	  specify the dimensions of the image to be m by n
+		  If only m is given, take n = m
+</pre>
+
+The following simple program produces some sample image data
+
+<pre>#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+
+#define N_POINTS 200
+
+main()
+{
+    int i, j;
+    double x, y;
+
+    for (j = 0; j &lt; N_POINTS; j++)
+	for (i = 0; i &lt; N_POINTS; i++) {
+	    x = 2*i*M_PI/N_POINTS;
+	    y = 2*j*M_PI/N_POINTS;
+	    printf("%f ", 255*(1 + sin(x)*cos(y)));
+	}
+}
+</pre>
+
+Compile this as <tt>data</tt>, then type
+
+<pre>	data  |  make_image  -s 200  |  xv -
+</pre>
+
+and you will see:
+
+<center><img src="./Graphics Tools_files/example.gif"></center>
+
+It's as easy as that!<p>
+
+</p></a><h3><a name="image"></a><a name="images">Multiple Images ("Movies")</a></h3><a name="images">
+
+Sometimes it is desirable to view the results of a calculation in the
+form of a <i>sequence</i> of images, showing the time-development of
+some system, or perhaps a sequence of steps toward convergence of some
+iterative process.  The program <tt>make_images</tt> automates the
+operation of </a><a href="http://www.physics.drexel.edu/courses/Comp_Phys/General/Graphics/index.html#image"><tt>make_image</tt></a>, breaking the
+input stream into a series of frames and storing the resulting images
+in separate files.  The command-line arguments are the same as for
+<tt>make_image</tt>, with the additional option
+
+<pre>	-F name	  set the "base" name for image files
+</pre>
+
+which defines the base name to be used in naming the output files.
+The default is "IMAGE", and successive images are saved in files
+IMAGE.0000, IMAGE.0001, etc.
+
+<p>Thus, if the program <tt>data</tt> produces a stream of image data
+in the form of 200x200 arrays, typing
+
+</p><pre>	data  |  make_images -s 200 -F TEMP
+</pre>
+
+will create a series of files TEMP.0000, TEMP.0001,... containing Sun
+rasterfile images derived from the input data.  New image files will
+continue to be created until the input data stream terminates.
+
+<p>The image files may be conveniently viewed using the
+<tt>animate</tt> utility by typing
+
+</p><pre>	animate  TEMP.*
+</pre>
+
+
+</body><div></div><div></div></html>

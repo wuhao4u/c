@@ -1,0 +1,126 @@
+
+<!-- saved from url=(0076)http://www.physics.drexel.edu/courses/Comp_Phys/General/UNIX/essentials.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>UNIX Essentials</title>
+</head>
+
+<body bgcolor="#ffffee" data-feedly-mini="yes">
+
+<center><h1>UNIX survival guide</h1></center>
+<font size="+1">
+
+Here are a few essential UNIX commands.  For more information on any
+given command, type "man command-name" or use the "Help" tool on your
+desktop.
+
+<p></p><center>
+<table border="">
+<tbody><tr>
+<td><i>Moving around the<br>UNIX file system</i>
+</td><td>
+	<table>
+	<tbody><tr><td><b>pwd</b>	</td><td>print working directory</td></tr>
+	<tr><td><b>cd</b>	</td><td>change directory</td></tr>
+	<tr><td><b>mkdir</b>	</td><td>make directory</td></tr>
+	<tr><td><b>rmdir</b>	</td><td>remove directory</td></tr>
+	<tr><td><b>ls</b>	</td><td>list contents of directory</td></tr>
+	<tr><td><b>cp</b>	</td><td>copy a file</td></tr>
+	<tr><td><b>mv</b>	</td><td>move (rename) a file</td></tr>
+	<tr><td><b>rm</b>	</td><td>remove (delete) a file</td></tr>
+	<tr><td><b>cat</b>	</td><td>display contents of a file</td></tr>
+	<tr><td><b>more (less)</b>	</td><td>display contents of a file,
+				    page by page</td></tr>
+	<tr><td><b>head (tail) -N</b> </td><td>display first (last) N
+					  lines of a file</td></tr>
+	</tbody></table>
+</td></tr>
+
+<tr>
+<td><i>Special directories</i>
+</td><td>
+	<table>
+	<tbody><tr><td><b>.</b>		</td><td>current working directory</td></tr><tr>
+	<td><b>..</b>		</td><td>next directory up</td></tr><tr>
+	<td><b>~</b>		</td><td>home (login) directory</td></tr><tr>
+	<td><b>~user</b>	</td><td>home directory of "user"</td></tr><tr>
+	</tr></tbody></table>
+</td></tr><tr>
+
+<td><i>Wild cards</i>
+</td><td>
+	<table>
+	<tbody><tr><td><b>*</b>		</td><td>match any character string</td></tr><tr>
+	<td><b>?</b>		</td><td>match any single character</td></tr><tr>
+	<td><b>[ab]</b>		</td><td>a or b</td></tr><tr>
+	<td><b>[1-5]</b>	</td><td>1, 2, 3, 4, or 5</td></tr><tr>
+	</tr></tbody></table>
+</td></tr><tr>
+
+<td><i>Redirection</i>
+</td><td>
+	<table>
+	<tbody><tr><td><b>&gt; file</b>	</td><td>redirect stdout to a file</td></tr><tr>
+	<td><b>&gt;&gt; file</b>	</td><td>redirect stdout, but append to
+				    an existing file</td></tr><tr>
+	<td><b>&lt; file</b>	</td><td>redirect stdin from a file</td></tr><tr>
+	<td><b>|</b>		</td><td>interprocess pipe (stdout --&gt; stdin)</td></tr><tr>
+	<td><b>&gt;&amp; file</b>	</td><td>redirect stdout and stderr to a
+				    file (csh)</td></tr><tr>
+	<td><b>&gt; file 2&gt;&amp;1 &nbsp;</b>	</td><td>redirect stdout and stderr
+					    to a file (bash)</td></tr><tr>
+	</tr></tbody></table>
+</td></tr><tr>
+
+<td><i>Editing files</i>
+</td><td>
+	<table>
+	<tbody><tr><td><b>vi</b>		</td><td>one of several standard UNIX editors</td></tr><tr>
+<!--
+	<td><b>textedit</b>	<td>window-based editor
+				    (in the Sun window system
+				    only)<tr>
+-->
+	<td><b>emacs</b>	</td><td>	a powerful text editor</td></tr><tr>
+	</tr></tbody></table>
+</td></tr><tr>
+
+<td><i>Compilers</i>
+</td><td>
+	<table>
+	<tbody><tr><td><b>g77, gfortran</b>&nbsp;	</td><td>GNU FORTRAN compile (and load)</td></tr><tr>
+	<td><b>gcc</b>		</td><td>GNU C compile (and load)</td></tr><tr>
+	<td><b>g++</b>		</td><td>GNU C++ compile (and load)</td></tr><tr>
+	</tr></tbody></table>
+</td></tr><tr>
+
+<td><i>Network access</i>
+</td><td>
+	<table>
+<!--
+	<td><b>telnet, rlogin</b> <td>interactive remote login
+				   -- DISABLED<sup>*</sup><tr>
+-->
+	<tbody><tr><td><b>ftp&nbsp;</b>	</td><td>non-interactive remote access
+				    (for file transfers)<sup>*</sup></td></tr><tr>
+	<td><b>ssh</b> </td><td>secure (encrypted) remote interactive shell</td></tr><tr>
+	<td><b>scp</b> </td><td>secure (encrypted) replacement for ftp</td></tr><tr>
+	</tr></tbody></table>
+</td></tr><tr>
+
+</tr></tbody></table>
+</center>
+
+<p><sup>*</sup><i>This program is regarded as insecure, as it
+sends cleartext information around the network, and should be avoided
+whenever possible.
+<!--
+Telnet and rlogin access to newton are explicitly
+forbidden by the operating system.
+-->
+</i>
+
+</p><p>Other useful commands include: grep, awk, perl, python, diff, wc,
+ps, kill, alias, mail -- see "man" for more.
+
+
+</p></font></body><div></div><div></div></html>

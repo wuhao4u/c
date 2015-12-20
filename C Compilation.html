@@ -1,0 +1,92 @@
+
+<!-- saved from url=(0077)http://www.physics.drexel.edu/courses/Comp_Phys/General/C_basics/compile.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>C Compilation</title>
+</head>
+
+<body bgcolor="#ffffee" data-feedly-mini="yes">
+
+<center><h1> C Compilation </h1></center>
+
+Source codes for C programs are written as ASCII text.  They must be
+<i>compiled</i> and <i>linked</i> to produce <i>executable</i>
+programs. The executable files are what you actually run on UNIX.
+
+<p>
+The compilation of code involves several steps: 
+</p><ul>
+<li> parsing of the statements for syntax
+</li><li> translation of the statements into machine language
+</li><li> setting up the addresses of all variables
+</li><li> optimization of the code (if desired)
+</li></ul>
+
+In most modern computers, various languages, e.g.  Fortran and C, have
+distinct syntax handlers, but share a common translator into assembly
+language, and a common optimization engine.
+
+<p> The linking step assembles the various routines produced by the
+compiler during the compilation step, and resolves missing calls to
+either language-specific libraries or system-wide functions.
+
+</p><p> We will use the GNU C compiler for this course because it is (a)
+free and (b) more efficient than the Sun equivalent. This compiler is
+invoked via the <kbd>gcc</kbd> command.  Typing
+
+</p><pre>	gcc fname.c
+</pre>
+
+will compile the file <kbd>fname.c</kbd>, linked it to the default
+libraries and produce an executable file called by default
+<kbd>a.out</kbd>.
+
+<p> Several parameters may be used to modify the default in the
+compilation.  Some of these are:
+
+</p><pre>	-o out_file        specify the output file (executable, or
+	                   binary) to be out_file
+
+	-O, -O1, -O2, -O3  specify optimization level
+
+	-c fname.c         indicates that you only want to compile
+			   the file <i>fname.c</i>, in which case
+	                   the output file will be <i>fname.o</i>
+
+	-lname             links with the library <i>libname.a</i>
+
+	-Ldirectory        directs gcc to look for libraries in
+	                   <i>directory</i>, in addition to the
+	                   standard system library path
+
+</pre>
+
+<p> We strongly advise that you <em>omit</em> optimization until you
+are sure a program works.  Optimizers tend to change the code around
+internally for the sake of efficiency, and they can make it extremely
+difficult to find errors in a complicated program.  In addition, many
+have been known to introduce bugs of their own...
+
+</p><p> We also maintain the following aliases on <kbd>newton</kbd> to
+facilitate your compilations:
+
+</p><pre>
+	C fname    will compile and link the C program in
+		   the file <i>fname.c</i> with the standard
+		   C mathematics library, placing the executable
+		   in <i>fname</i>
+
+        Cgfx       will compile the code in <i>fname.c</i>,
+		   then link it with the standard C mathematics
+		   library and the <i>xutility</i> graphics
+		   library.
+
+                   This library contains (among other things)
+		   a set of plotting functions written by Biao
+		   Lu (a former graduate student who left us
+		   in 1994) which form the basis for much of
+		   the graphics we will need to do during the
+		   quarter.
+</pre>
+
+
+</body><div></div><div></div></html>

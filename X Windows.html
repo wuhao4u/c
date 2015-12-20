@@ -1,0 +1,181 @@
+
+<!-- saved from url=(0062)http://www.physics.drexel.edu/courses/Comp_Phys/General/x.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title> X Windows</title>
+</head>
+
+<body bgcolor="#ffffee" data-feedly-mini="yes">
+
+<center><h1> The X Window System</h1></center>
+
+The public-domain X Window System (or just X) implements a hierarchy
+of resizable windows and supports high-performance device-independent
+graphics in a client-server paradigm. X is based on an asynchronous
+network protocol and not on procedure or system calls. This allows
+many advantages: <p>
+
+</p><ul>
+<li> Both local and network connection can be operated in the same way,
+making the network transparent, both from the user's point of view, and
+from the application's point of view
+
+</li><li> X has been implemented over a wide range of operating systems and
+computer hardware
+
+</li><li> X has good performance over the network
+
+</li></ul>
+<p>
+
+This last advantage is because X is designed to be efficient on the
+network; this was achieved via the client-server paradigm discussed
+below.  The information necessary to set up a new window is minimal;
+the size of the window, background color, font style and size, ...  If
+an intelligent ``server'' -- the X server -- receives this minimal
+information, it can act on it and ``serve'' a window with the
+appropriate characteristics. The amount of information that needs to
+be carried over the network is small compared to, say, a bitmap
+description of the same window. This renders X an efficient system for
+maintaining windows at a distance.  </p><p>
+
+</p><h2> The Client-Server Paradigm </h2>
+
+The <i> client </i> is the computer requiring a window to be opened.
+It can be local, meaning being the same CPU as the X server, or on a
+local network, or on a World Wide network, such as the Internet. The
+<i> server </i> is implemented on the local, hopefully fast, CPU and
+display. It carries out the operations that the client requires. This
+division of labor greatly enhances the speed of graphics display. But
+the most important important advantage is that the window required by
+the client computer can be located anywhere on the network; X requests
+are then sent asynchronously over the network and fulfilled by the
+local server.  This allows full interactive sessions, with all the
+sophisticated graphics and image manipulations that may be required,
+to be conducted from a distance.  <p>
+
+This raises the question of security. X can open a window on any
+server on the network; would you like a person in Japan, say, to be
+able to open a window on your computer without your permission?  To
+guard against this, X supports a security complement. Before a client
+can open a window on any display, the server must be authorized to
+accept X requests from this particular client. To do this, you must
+type on the server</p><p>
+
+</p><pre><kbd>
+	xhost client_hostname
+</kbd>
+</pre>
+<p>
+
+where ``client_hostname'' is the network name of the client you want
+to authorize on the server. Then, the client must be told where to
+send the X requests; type on it </p><p>
+
+</p><pre><kbd>
+	setenv DISPLAY server_hostname:0
+</kbd>
+</pre>
+<p>
+
+where ``server_hostname'' is the server hostname.
+<br>
+
+</p><center><img src="./X Windows_files/x.gif"></center>
+<p>
+
+A server can serve more than one client at once. These various clients
+need only be authorized to use the server. Consequently, it is common
+practice to have numerous windows talking to different computers,
+either locally or on the net.  Also, a client can communicate with
+many servers simultaneously; this is the feature used in ``shared
+application'' environments, where applications simulaneously display
+results on many servers, or in teleconferencing software, where
+voice and video images are shared by different displays.  </p><p>
+
+</p><h2>X Window Managers </h2>
+
+Unlike many other window systems which implement a particular user
+interface, X is a substrate on which many different user interfaces
+can be built. The application which controls the user interface is the
+window manager. This a client which has authority over the layout of
+the windows on the screen, and to some extent over the properties of
+the windows.  It is this client which defines the ``look and feel'' of
+the window on the screen. Among others, there are <p>
+
+</p><ul>
+<li> <b> twm </b> (Tab Window Manager) the window manager
+   provided with the X distribution from MIT
+</li><li> <b> olwm </b>, the proprietary window manager from SunSoft,
+   the software branch of Sun Microsystems
+</li><li> <b> Motif </b>, the look and feel used by Digital and many other
+  vendors
+</li><li> <b> HPview </b>, the proprietory look and feel from HP
+</li><li> <b> MacX </b>, the Macintosh implementation of X
+</li></ul>
+<p>
+
+These different window managers will present very different looks and
+feels to the user; however, applications running under the X protocol
+will work on all X servers, regardless of the window manager used.
+
+</p><h2> X Tools </h2>
+
+Many utilities (clients) have been written to run under X; these are
+typically available as ``contributions'' in the X distribution
+kits. They are often written in C and make use of the standard X
+libraries, Xlib and Xt Intrinsics. Some have been written at MIT; many
+others come from other sources.  <p>
+
+Some of the most useful utilities are:
+
+</p><dl>
+<dt> <b> xv </b>
+</dt><dd> An image-handling tool for Gif, Pict,... files
+</dd><dt> <b> display </b>
+</dt><dd> Another image-handling tool for Gif, Pict,... files
+</dd><dt> <b> ghostview </b>
+</dt><dd> A postscript previewer 
+</dd><dt> <b> ximage </b>
+</dt><dd> A NCSA program to display data in image form
+</dd><dt> <b> xdvi </b>
+</dt><dd> A TeX (word processor) previewer
+</dd><dt> <b> xwd </b>
+</dt><dd> Dump an image of an X window
+</dd><dt> <b> xpr </b>
+</dt><dd> Print an X window dump
+</dd><dt> <b> xpaint </b>
+</dt><dd> A MacPaint-like program
+</dd><dt> <b> mpeg_play </b>
+</dt><dd> To ``play'' mpeg ``movies''
+</dd></dl>
+<p>
+
+These utilities are often intuitive to use; a little trial &amp; error
+is all that is needed. You can get general descriptons of these
+commands, and some help concerning their use, in the ``man'' pages.
+</p><p>
+
+
+</p><h2> References </h2>
+
+The interested reader can find the best references to the X 
+window system in a series of authoritative monographs 
+published by <i> O'Reilly &amp; Associates, Inc. </i>, with 
+titles such as
+<p>
+
+</p><ul>
+<li> The X window system in a Nutshell
+</li><li> Volume 0: X Protocol reference Manual
+</li><li> Volume 1 &amp; 2: Xlib Programming Manual; Xlib Reference Manual
+</li><li> Volume 3: X Window System User's Guide
+</li><li> ...
+</li></ul>
+<p>
+
+Note that these monographs are very detailed and may contain far more
+information than you ever really wanted to know.
+
+
+
+</p></body><div></div><div></div></html>
